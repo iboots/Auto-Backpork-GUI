@@ -22,7 +22,7 @@ For legals reasons (and because i don't want my github account banned lol) i can
 - Put you're patched and signed sprx files inside the folder **"fakelib"**.
 - Once you have [Python](https://www.python.org/downloads/) run 
 ```bash
- python main.py
+ python Backport.py -c
 ```
 - You can choose between 3 mode : downgrade, decrypt or full, if you don't have the decrypted files of you're games you can choose the full option otherwise choose downgrade (default one).
 - For the first option (input directory) put the directory of you're game files.
@@ -35,12 +35,48 @@ For legals reasons (and because i don't want my github account banned lol) i can
 ### One line command
 You can also run a one line command, for exemple to simply downgrade to 7.00 and sign your game:
 ```bash
- python main.py --input "/home/user/ps5/decrypted" --output "/home/user/ps5/signed" --sdk-pair 7 --batch
+ python Backport.py --input "/home/user/ps5/decrypted" --output "/home/user/ps5/signed" --sdk-pair 7
 ```
 Or if you want to also decrypt the fake sign ELF:
 ```bash
- python main.py --mode full --input "/home/user/ps5/encrypted" --output "/home/user/ps5/signed" --sdk-pair 7 --batch
+ python Backport.py --mode full --input "/home/user/ps5/encrypted" --output "/home/user/ps5/signed" --sdk-pair 7
 ```
+
+### Python library
+You can also use this project as a Python library, for exemple:
+```python
+from Backport import PS5ELFProcessor
+    
+# Initialize processor
+processor = PS5ELFProcessor(use_colors=True)
+    
+# Decrypt files
+results = processor.decrypt_files(input_dir="input", output_dir="decrypted")
+    
+# Downgrade and sign files
+results = processor.downgrade_and_sign(
+	input_dir="decrypted",
+	output_dir="signed",
+	sdk_pair=4,
+	paid=0x3100000000000002,
+	ptype=1,
+	fakelib_source="fakelib"
+)
+    
+# Full pipeline
+results = processor.process_full_pipeline(
+	input_dir="encrypted",
+	output_dir="final",
+	sdk_pair=4,
+	paid=0x3100000000000002,
+	ptype=1,
+	fakelib_source="fakelib"
+)
+    
+# Revert libc patch
+results = processor.revert_libc_patch(input_dir="signed_files")
+```
+
 
 ## TODO
 - [X] Add FSELF decryptor.
